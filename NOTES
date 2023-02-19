@@ -1,3 +1,41 @@
 http://www.colecovision.eu/stm8/
 http://www.colecovision.eu/stm8/L-Discovery%20LED.shtml
 https://github.com/vdudouyt/stm8flash
+
+
+2023-02-18
+
+stm8l151 processor
+https://jlcpcb.com/partdetail/Stmicroelectronics-STM8L151K4U6TR/C160718
+2978 in stock
+1.59 qty 1..30, no minimum
+STM8L151K4U6TR
+C160718
+UFQFPN-32(5x5)
+
+STM8 product class stm8
+L    low poer
+151  sub family type ultra low power without LCD
+K    pin count = 32
+4    program memory size = 16 kbytes
+U    package UFQFPN
+6    temperature -40 to 85 deg c
+TR   delivery tape & reel
+
+footprint in section 10.5 of the manual
+
+Figure 52. UFQFPN32 - 32-pin, 5 x 5 mm, 0.5 mm pitch ultra thin fine
+pitch quad flat package outline
+
+like kicad Package_QFP:LQFP-32_5x5mm_P0.5mm
+except pads should be 0.6 mm long instead of 1.5
+and there should be a 3.45 square in the middle
+
+when using the QFP footprint wizard, "horizontal spacing" is the
+center to center distance between the left and right columns of pads.
+the datasheet says 5.3 from outside to outside of pad, and the pads
+are .6, so 5.3 - .6/2 - .6/2 = 4.7
+
+
+
+
