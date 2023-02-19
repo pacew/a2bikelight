@@ -47,7 +47,7 @@ void main(void)
 	for(;;)
 	{
 		PE_ODR &= 0x7f;
-		if (clock() % 500 <= 250)
+		if (clock() % 500 <= 100)
 			PE_ODR |= 0x80;
         PC_ODR &= 0x7f;
 		if (clock() % 1000 <= 500)
