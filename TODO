@@ -1,0 +1,22 @@
+touch sensing pad "STM8 Touch Sensing Library"
+
+reset button, cap
+
+accelerometer - i2c or spi?
+
+light sensor
+
+regular button
+
+serial port
+
+high sinnk/source pins can do 20 mA
+
+wakeup mode?
+
+read/write cycles program 10k, data 300k
+i/o pin can source or sink up to 10 mA, and total source or sink must be < 80mA
+
+reset cap 100nF
+
+
