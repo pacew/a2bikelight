@@ -43,3 +43,17 @@ are .6, so 5.3 - .6/2 - .6/2 = 4.7
 ================================================================
 accelerometer
 https://jlcpcb.com/partdetail/Memsic-MXC6655XA/C5189050
+
+================================================================
+
+normal upload to dev board
+
+sudo stm8flash -S 533F6F063F3F494942290467 -c stlinkv2 -p stm8l152c6 -w led.ihx
+Determine FLASH area
+STLink: v2, JTAG: v0, SWIM: v6, VID: 8304, PID: 4837
+Due to its file extension (or lack thereof), "led.ihx" is considered as INTEL HEX format!
+141 bytes at 0x8000... OK
+Bytes written: 141
+
+dev board led's on PE7 and PC7
+my led is on PD3

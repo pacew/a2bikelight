@@ -5,6 +5,12 @@
 #define PC_DDR	(*(volatile uint8_t *)0x500c)
 #define PC_CR1	(*(volatile uint8_t *)0x500d)
 
+#define PD_ODR	(*(volatile uint8_t *)0x500f)
+#define PD_DDR	(*(volatile uint8_t *)0x5011)
+#define PD_CR1	(*(volatile uint8_t *)0x5012)
+
+
+
 #define PE_ODR	(*(volatile uint8_t *)0x5014)
 #define PE_DDR	(*(volatile uint8_t *)0x5016)
 #define PE_CR1	(*(volatile uint8_t *)0x5017)
@@ -44,13 +50,21 @@ void main(void)
 	PC_DDR = 0x80;
 	PC_CR1 = 0x80;
 
+	PD_DDR = 0x08;
+	PD_CR1 = 0x08;
+
 	for(;;)
 	{
 		PE_ODR &= 0x7f;
 		if (clock() % 500 <= 100)
 			PE_ODR |= 0x80;
-        PC_ODR &= 0x7f;
+		PC_ODR &= 0x7f;
 		if (clock() % 1000 <= 500)
 			PC_ODR |= 0x80;
+
+		PD_ODR &= 0xf7;
+		if (clock() % 500 <= 100)
+			PD_ODR |= 0x08;
+
 	}
 }
