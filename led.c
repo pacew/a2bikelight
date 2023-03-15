@@ -1,5 +1,6 @@
 // Source code under CC0 1.0
 #include <stdint.h>
+#include <stdio.h>
 
 #define PC_ODR	(*(volatile uint8_t *)0x500a)
 #define PC_DDR	(*(volatile uint8_t *)0x500c)
@@ -42,8 +43,8 @@ unsigned int clock(void)
 	return((unsigned int)(h) << 8 | l);
 }
 
-void
-putch (int c)
+int
+putchar (int c)
 {
 	if (c == '\n') {
 		while ((USART1_SR & 0x80) == 0) // TXE Transmit data empty
@@ -53,14 +54,9 @@ putch (int c)
 	while ((USART1_SR & 0x80) == 0) // TXE Transmit data empty
 		;
 	USART1_DR = c;
+	return (c);
 }
 
-void
-puts (char *p)
-{
-	while (*p)
-		putch (*p++);
-}
 
 void
 delay(int count)
@@ -114,7 +110,8 @@ void main(void)
 		delay (300);
 		PD_ODR |= 0x08;
 		delay (100);
-		puts ("hello\n");
+		val++;
+		printf ("hello %d\n", val);
 
 	}
 }
