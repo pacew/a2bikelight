@@ -1,4 +1,19 @@
-// Source code under CC0 1.0
+/*
+ * using stm8l151k4
+ * "medium density"
+ * 16k flash
+ * 1k eeprom
+ * 2k ram
+ * 1 basic 8 bit timer
+ * 2 general purpose 16 bit timers
+ * 1 advanced control 16 bit timer
+ * 1 spi
+ * 1 i2c
+ * 1 usart
+ */
+
+
+
 #include <stdint.h>
 #include <stdio.h>
 
