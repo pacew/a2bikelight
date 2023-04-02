@@ -51,7 +51,32 @@
 #define USART1_GTR (*(volatile uint8_t *)0x5239) // USART1 guard time register
 #define USART1_PSCR (*(volatile uint8_t *)0x523A) // USART1 prescaler register
 
-unsigned int clock(void)
+#define GPIO_BASE(port) (0x5000 + 5 * ((port) - 'A'))
+
+#define GPIO_MASK(bitnum) (1 << (bitnum))
+
+#define GPIO_ODR(port) (*(volatile uint8_t *)(GPIO_BASE(port) + 0))
+#define GPIO_IDR(port) (*(volatile uint8_t *)(GPIO_BASE(port) + 1))
+#define GPIO_DDR(port) (*(volatile uint8_t *)(GPIO_BASE(port) + 2))
+#define GPIO_CR1(port) (*(volatile uint8_t *)(GPIO_BASE(port) + 3))
+#define GPIO_CR2(port) (*(volatile uint8_t *)(GPIO_BASE(port) + 4))
+
+#define GPIO_SET(port, bitnum) (GPIO_ODR(port) |= GPIO_MASK(bitnum))
+#define GPIO_CLEAR(port, bitnum) (GPIO_ODR(port) &= ~GPIO_MASK(bitnum))
+
+#define LIGHT_PORT 'D'
+#define LIGHT_BITNUM 3
+
+void
+gpio_init_output (uint8_t port, uint8_t bitnum)
+{
+	GPIO_DDR(port) |= GPIO_MASK(bitnum); // output
+	GPIO_CR1(port) |= GPIO_MASK(bitnum); // push-pull
+	GPIO_CR2(port) &= ~GPIO_MASK(bitnum); // low speed (up to 2 MHz)
+}
+
+unsigned int
+clock(void)
 {
 	unsigned char h = TIM1_PCNTRH;
 	unsigned char l = TIM1_PCNTRL;
@@ -115,18 +140,15 @@ void main(void)
 
 
 	// Configure pins
-	PD_DDR = 0x08;
-	PD_CR1 = 0x08;
+	gpio_init_output (LIGHT_PORT, LIGHT_BITNUM);
 
 	int val = 0;
-	for(;;)
-	{
-		PD_ODR &= 0xf7;
-		delay (300);
-		PD_ODR |= 0x08;
+	while (1) {
+		GPIO_CLEAR(LIGHT_PORT, LIGHT_BITNUM); // off
+		delay (400);
+		GPIO_SET(LIGHT_PORT, LIGHT_BITNUM); // on
 		delay (100);
 		val++;
 		printf ("hello %d\n", val);
-
 	}
 }
