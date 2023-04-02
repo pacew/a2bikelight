@@ -235,15 +235,15 @@ waveforms in an example where TIM1_ARR = 8.
 
 	TIM1_CCER1 |= 0x10; // CC2NE
 
-	uint16_t prescale = 60;
+	uint16_t prescale = 0;
 	TIM1_PSCRH = prescale >> 8;
 	TIM1_PSCRL = prescale & 0xff;
 
-	int reload = 10000;
+	int reload = 160;
 	TIM1_ARRH = reload >> 8;
 	TIM1_ARRL = reload & 0xff;
 
-	int compare = 2000;
+	int compare = 100;
 	TIM1_CCR2H = compare >> 8;
 	TIM1_CCR2L = compare & 0xff;
 
