@@ -75,9 +75,6 @@
 #define LIGHT_PORT 'D'
 #define LIGHT_BITNUM 3
 
-/* D4 on pin 21. functions: PD4/TIM1_CH2/LCD_SEG18/ADC1_IN10/COMP1_INP */
-#define PWM_PORT 'D'
-#define PWM_BITNUM 4
 
 #define TIM1_CR1 (*(volatile uint8_t *)0x52b0)
 #define TIM1_CR2 (*(volatile uint8_t *)0x52b1)
@@ -168,14 +165,7 @@ void
 main(void)
 {
 	CLK_DIVR = 0x00; // Set the frequency to 16 MHz
-	CLK_PCKENR2 |= 0x02; // Enable clock to timer
-
-	// Configure timer
-	// 1000 ticks per second
-	TIM1_PSCRH = 0x3e;
-	TIM1_PSCRL = 0x80;
-	// Enable timer
-	TIM1_CR1 = 0x01;
+	CLK_PCKENR2 |= 0x02; // Enable clock to TIM1
 
 	/* 
 	 * serial 
@@ -199,25 +189,33 @@ main(void)
 void
 blink (void)
 {
+	// Configure timer for delay use (overridden by pwm)
+	// 1000 ticks per second
+	TIM1_PSCRH = 0x3e;
+	TIM1_PSCRL = 0x80;
+	// Enable timer
+	TIM1_CR1 = 0x01;
+
+
 	int val = 0;
 	while (1) {
 		GPIO_CLEAR(LIGHT_PORT, LIGHT_BITNUM); // off
-		GPIO_CLEAR(PWM_PORT, PWM_BITNUM); // off
 		delay (400);
 		GPIO_SET(LIGHT_PORT, LIGHT_BITNUM); // on
-		GPIO_SET(PWM_PORT, PWM_BITNUM); // on
 		delay (100);
 		val++;
 		printf ("hello %d\n", val);
 	}
 }
 
+/* D4 on pin 21. functions: PD4/TIM1_CH2/LCD_SEG18/ADC1_IN10/COMP1_INP */
+#define PWM_PORT 'D'
+#define PWM_BITNUM 4
+
 void
 pwm (void)
 {
-	gpio_init_output (PWM_PORT, PWM_BITNUM);
-	GPIO_SET(PWM_PORT, PWM_BITNUM); // on
-
+	GPIO_CR1(PWM_PORT) |= GPIO_MASK(PWM_BITNUM); // push pull
 
 /*
 Up-counting is active when the DIR bit in the TIM1_CR1 register is
@@ -229,19 +227,23 @@ value (in TIM1_ARR) then OCiREF is held at 1. If the compare value is
 waveforms in an example where TIM1_ARR = 8.
 */
 	
+	TIM1_CCMR2 = (TIM1_CCMR2 & ~0x03) | 0x00; /* CC2S = 0 for output */
 	TIM1_CCMR2 = (TIM1_CCMR2 & ~0x70) | 0x60; /* OC2M: PWM mode 1 */
-	TIM1_CCER2 |= 1; /* CC2E */
-	// want MOE=1 CC1E=1 CC1NE=0
+	TIM1_CCMR2 &= ~3; // output
 
-	int prescale = 60000;
+	TIM1_CCER2 |= 1; /* CC2E */
+
+	TIM1_CCER1 |= 0x10; // CC2NE
+
+	uint16_t prescale = 60;
 	TIM1_PSCRH = prescale >> 8;
 	TIM1_PSCRL = prescale & 0xff;
 
-	int reload = 1000;
+	int reload = 10000;
 	TIM1_ARRH = reload >> 8;
 	TIM1_ARRL = reload & 0xff;
 
-	int compare = 20000;
+	int compare = 2000;
 	TIM1_CCR2H = compare >> 8;
 	TIM1_CCR2L = compare & 0xff;
 
@@ -257,8 +259,22 @@ waveforms in an example where TIM1_ARR = 8.
 		uint8_t lo = TIM1_CNTRL;
 		uint16_t count = (hi << 8) | lo;
 
-		printf ("hello %d %5d %6d\n", val, count, count - last);
+		printf ("hello %d %5d %6d %02x\n", 
+			val, count, count - last,
+			TIM1_SR1);
+		if (TIM1_SR1 & 1) {
+			printf ("tick %02x **************************\n",
+ 				TIM1_SR1);
+			TIM1_SR1 &= ~1;
+		}
+		if (TIM1_SR1 & 4) {
+			printf ("tock %02x *************\n",
+ 				TIM1_SR1);
+			TIM1_SR1 &= ~4;
+		}
 		last = count;
+			
+
 	}
 
 }
