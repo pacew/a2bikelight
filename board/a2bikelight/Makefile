@@ -12,3 +12,8 @@ pos.csv: a2bikelight-top-pos.csv
 
 bom.csv: a2bikelight.csv
 	cp a2bikelight.csv bom.csv
+
+a2bikelight.csv: a2bikelight.kicad_pro
+	@echo "bom is out of date"
+	@echo "update according to 'kicad to jlcpcb' google doc"
+	exit 1
