@@ -1,19 +1,25 @@
-all: pos.csv bom.csv
-	rm -f a2bikelight.zip
-	zip a2bikelight.zip *.gbr *.drl
+BOARD=a2bikelight
 
-pos.csv: a2bikelight-top-pos.csv
+all: pos.csv bom.csv
+	rm -f $(BOARD).zip
+	zip $(BOARD).zip *.gbr *.drl
+
+bom:
+	kicad-cli sch export python-bom --output bom.xml $(BOARD).kicad_sch 
+
+
+pos.csv: $(BOARD)-top-pos.csv
 	sed -e 's/Ref,/Designator,/' \
 		-e 's/PosX,/Mid X,/' \
 		-e 's/PosY,/Mid Y,/' \
 		-e 's/Rot,/Rotation,/' \
 		-e 's/,Side/,Layer/' \
-	< a2bikelight-top-pos.csv > pos.csv
+	< $(BOARD)-top-pos.csv > pos.csv
 
-bom.csv: a2bikelight.csv
-	cp a2bikelight.csv bom.csv
+bom.csv: $(BOARD).csv
+	cp $(BOARD).csv bom.csv
 
-a2bikelight.csv: a2bikelight.kicad_pro
+$(BOARD).csv: $(BOARD).kicad_pro
 	@echo "bom is out of date"
 	@echo "update according to 'kicad to jlcpcb' google doc"
 	exit 1
